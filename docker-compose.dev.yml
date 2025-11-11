@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  # MongoDB
+  mongodb:
+    image: mongo:7
+    container_name: inazuma-mongodb-dev
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: devpassword123
+      MONGO_INITDB_DATABASE: inazuma_avatars
+    volumes:
+      - mongodb_data_dev:/data/db
+    networks:
+      - inazuma-network
+
+  # Mongo Express (Interface admin MongoDB)
+  mongo-express:
+    image: mongo-express:latest
+    container_name: inazuma-mongo-express-dev
+    restart: unless-stopped
+    ports:
+      - '8081:8081'
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: devpassword123
+      ME_CONFIG_MONGODB_URL: mongodb://admin:devpassword123@mongodb:27017/
+      ME_CONFIG_BASICAUTH: false
+    depends_on:
+      - mongodb
+    networks:
+      - inazuma-network
+
+  # Next.js App (Mode Dev - avec hot reload)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: inazuma-app-dev
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    environment:
+      NODE_ENV: development
+      MONGODB_URI: mongodb://admin:devpassword123@mongodb:27017/inazuma_avatars?authSource=admin
+      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_SECRET: dev-secret-change-in-production
+    volumes:
+      - ./:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - mongodb
+    networks:
+      - inazuma-network
+
+volumes:
+  mongodb_data_dev:
+
+networks:
+  inazuma-network:
+    driver: bridge

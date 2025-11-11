@@ -1,36 +1,178 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ⚡ Inazuma Avatar Hub
 
-## Getting Started
+**Plateforme communautaire de partage de Codes d'Avatar pour Inazuma Eleven: Victory Road**
 
-First, run the development server:
+> Partagez, découvrez et votez pour les meilleurs avatars de la communauté !
 
-```bash
+🌐 **Live:** [inazuma.wireredblue.xyz](https://inazuma.wireredblue.xyz)
+
+---
+
+## 🎯 Fonctionnalités
+
+- ✅ **Partage d'avatars** : Upload ton screenshot + Code d'Avatar
+- ✅ **Galerie communautaire** : Explore les créations de la communauté
+- ✅ **Copie instantanée** : Copie le Code d'Avatar en un clic
+- ✅ **Système de votes** : Like tes avatars préférés
+- ✅ **Filtres avancés** : Recherche par style, rôle, tags
+- ✅ **Authentification** : Google, Discord ou Email/Password
+- ✅ **Responsive** : Fonctionne sur mobile, tablette et desktop
+
+---
+
+## 🚀 Stack Technique
+
+- **Frontend:** Next.js 15 (App Router) + TypeScript + Tailwind CSS
+- **Backend:** Next.js API Routes
+- **Database:** MongoDB
+- **Auth:** NextAuth.js
+- **Storage:** Cloudinary (images)
+- **Deployment:** Docker + Docker Compose + Nginx
+- **SSL:** Let's Encrypt (auto-renew)
+
+---
+
+## 🛠️ Installation locale
+
+### Prérequis
+
+- Node.js 20+
+- Docker & Docker Compose
+- Compte Cloudinary (gratuit)
+
+### 1. Cloner le projet
+
+\`\`\`bash
+git clone https://github.com/YOUR_USERNAME/inazuma-avatar-hub.git
+cd inazuma-avatar-hub
+\`\`\`
+
+### 2. Installer les dépendances
+
+\`\`\`bash
+npm install
+\`\`\`
+
+### 3. Configuration
+
+Copier \`.env.example\` vers \`.env.local\` et remplir les variables :
+
+\`\`\`bash
+cp .env.example .env.local
+\`\`\`
+
+Éditer \`.env.local\` :
+\`\`\`env
+MONGODB_URI=mongodb://admin:devpassword123@localhost:27017/inazuma_avatars?authSource=admin
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your-secret-here
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+\`\`\`
+
+### 4. Lancer avec Docker (recommandé)
+
+\`\`\`bash
+docker-compose -f docker-compose.dev.yml up
+\`\`\`
+
+**Accès :**
+- 🌐 App : [http://localhost:3000](http://localhost:3000)
+- 🗃️ Mongo Express : [http://localhost:8081](http://localhost:8081)
+
+### 5. Ou lancer en mode dev classique
+
+\`\`\`bash
+# Démarrer MongoDB uniquement
+docker run -d -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=devpassword123 mongo:7
+
+# Lancer Next.js
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+\`\`\`
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📦 Déploiement sur VPS
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Consulter le guide complet : **[DEPLOYMENT.md](./DEPLOYMENT.md)**
 
-## Learn More
+**Résumé rapide :**
 
-To learn more about Next.js, take a look at the following resources:
+\`\`\`bash
+# Sur le VPS
+cd /var/www/inazuma-avatar-hub
+docker compose -f docker-compose.prod.yml up -d --build
+\`\`\`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📁 Structure du projet
 
-## Deploy on Vercel
+\`\`\`
+inazuma-avatar-hub/
+├── app/                    # Pages Next.js (App Router)
+│   ├── api/               # API Routes
+│   ├── (auth)/            # Pages d'authentification
+│   └── (main)/            # Pages principales
+├── components/            # Composants React
+│   ├── ui/               # Composants UI réutilisables
+│   └── avatar/           # Composants spécifiques avatars
+├── lib/                   # Utilitaires et config
+│   ├── db/               # Connexion MongoDB
+│   ├── cloudinary/       # Upload images
+│   └── auth.ts           # Config NextAuth
+├── types/                 # Types TypeScript
+├── public/               # Assets statiques
+├── Dockerfile            # Image Docker production
+├── Dockerfile.dev        # Image Docker dev
+├── docker-compose.dev.yml
+├── docker-compose.prod.yml
+├── nginx.conf            # Config Nginx
+└── DEPLOYMENT.md         # Guide de déploiement
+\`\`\`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🧪 Développement
+
+### Commandes utiles
+
+\`\`\`bash
+# Dev avec hot reload
+npm run dev
+
+# Build production
+npm run build
+
+# Lancer la prod en local
+npm run start
+
+# Linter
+npm run lint
+
+# Docker dev
+docker-compose -f docker-compose.dev.yml up
+
+# Docker prod
+docker-compose -f docker-compose.prod.yml up -d --build
+\`\`\`
+
+### Accès Mongo Express (dev)
+
+Interface web MongoDB : [http://localhost:8081](http://localhost:8081)
+
+---
+
+## 🔒 Sécurité
+
+- ✅ HTTPS obligatoire en production (Let's Encrypt)
+- ✅ Rate limiting sur l'API (Nginx)
+- ✅ Variables d'environnement sécurisées
+- ✅ Validation des inputs (Zod)
+- ✅ Protection CSRF (NextAuth)
+- ✅ Headers de sécurité (Nginx)
+
+---
+
+**Créé avec ❤️ pour la communauté Inazuma Eleven**

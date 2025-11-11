@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  # MongoDB Production
+  mongodb:
+    image: mongo:7
+    container_name: inazuma-mongodb-prod
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: inazuma_avatars
+    volumes:
+      - mongodb_data_prod:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - inazuma-network
+    command: mongod --quiet --logpath /dev/null
+
+  # Next.js App Production
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: inazuma-app-prod
+    restart: always
+    environment:
+      NODE_ENV: production
+      MONGODB_URI: mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASSWORD}@mongodb:27017/inazuma_avatars?authSource=admin
+      NEXTAUTH_URL: https://inazuma.wireredblue.xyz
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+    depends_on:
+      - mongodb
+    networks:
+      - inazuma-network
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: inazuma-nginx-prod
+    restart: always
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - nginx_cache:/var/cache/nginx
+    depends_on:
+      - app
+    networks:
+      - inazuma-network
+
+volumes:
+  mongodb_data_prod:
+  nginx_cache:
+
+networks:
+  inazuma-network:
+    driver: bridge
