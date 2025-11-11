@@ -11,21 +11,30 @@ import { Heart, Copy, Check, Trash2, Edit, ArrowLeft } from 'lucide-react'
 import type { Avatar } from '@/types'
 import { copyToClipboard } from '@/lib/utils'
 
-export default function AvatarDetailPage({ params }: { params: { id: string } }) {
+export default function AvatarDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { data: session } = useSession()
   const router = useRouter()
   const [avatar, setAvatar] = useState<Avatar | null>(null)
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
   const [voting, setVoting] = useState(false)
+  const [avatarId, setAvatarId] = useState<string>('')
 
   useEffect(() => {
-    fetchAvatar()
-  }, [params.id])
+    params.then(p => {
+      setAvatarId(p.id)
+    })
+  }, [params])
+
+  useEffect(() => {
+    if (avatarId) {
+      fetchAvatar()
+    }
+  }, [avatarId])
 
   const fetchAvatar = async () => {
     try {
-      const response = await fetch(`/api/avatars/${params.id}`)
+      const response = await fetch(`/api/avatars/${avatarId}`)
       const data = await response.json()
 
       if (data.success) {
@@ -61,8 +70,10 @@ export default function AvatarDetailPage({ params }: { params: { id: string } })
 
     setVoting(true)
     try {
-      const response = await fetch(`/api/avatars/${params.id}/vote`, {
+      const response = await fetch(`/api/avatars/${avatarId}/vote`, {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: session.user.id }),
       })
 
       const data = await response.json()
@@ -88,7 +99,7 @@ export default function AvatarDetailPage({ params }: { params: { id: string } })
     if (!confirm('Êtes-vous sûr de vouloir supprimer cet avatar ?')) return
 
     try {
-      const response = await fetch(`/api/avatars/${params.id}`, {
+      const response = await fetch(`/api/avatars/${avatarId}`, {
         method: 'DELETE',
       })
 
