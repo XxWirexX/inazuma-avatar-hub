@@ -1,4 +1,3 @@
-
 services:
   # MongoDB Production
   mongodb:
@@ -21,6 +20,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        MONGODB_URI: mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASSWORD}@mongodb:27017/inazuma_avatars?authSource=admin
+        NEXTAUTH_URL: https://inazuma.wireredblue.xyz
+        NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+        CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
+        CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+        CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
     container_name: inazuma-app-prod
     restart: always
     environment:
